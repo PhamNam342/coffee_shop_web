@@ -42,6 +42,8 @@ flowchart TD
     E --> F[Add to Favorites]
     F --> G[Read Blogs / Like / Comment]
     G --> H[View Personal Analytics & Profile]
+```
+```mermaid
 flowchart TD
     A[Admin Login] --> B[Dashboard Overview]
     B --> C[Manage Employees / Shifts]
@@ -50,9 +52,9 @@ flowchart TD
     B --> F[Create / Edit / Delete Blogs]
     B --> G[Create Vouchers / Promotions]
     B --> H[View Revenue & Analytics Charts]
-🏗️ Architecture & Tech Stack
 ```
-### Frontend
+# 🏗️ Architecture & Tech Stack
+## Frontend
 
 HTML5, CSS3, JavaScript, Bootstrap 5
 Responsive UI, dynamic dashboard, interactive charts
@@ -60,31 +62,34 @@ Responsive UI, dynamic dashboard, interactive charts
 ---
 
 
-### Backend
+## Backend
 
 Python (Flask)
 RESTful API, authentication, email verification, business logic
 
 ---
 
-### Database
+## Database
 
 PostgreSQL
 Normalized relational schema: users, orders, products, blogs, vouchers, shifts
 
 ---
 
-### Email
+## Email
 
 Gmail SMTP (for registration verification)
+
 Analytics
+
 Chart.js / JS libraries
+
 
 ---
 
 Interactive charts for spending, revenue, and performance
 
-💾 Data Management
+## 💾 Data Management
 
 Users: customer, employee, adminshop
 
@@ -100,7 +105,7 @@ Shift Management: shift
 
 ---
 
-⚙️ Installation & Setup
+## ⚙️ Installation & Setup
 
 Clone the repository
 ```
@@ -111,7 +116,7 @@ cd coffee_shop_web
 ---
 
 
-Create a virtual environment & install dependencies
+## Create a virtual environment & install dependencies
 ```
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
@@ -134,6 +139,11 @@ python app.py
 ```
 
 ---
+
+## Flask Configuration
+```
+app.secret_key = 'your_secret_key'  # Change for production
+```
 
 ## Access the app
 👉 http://127.0.0.1:5000/
@@ -161,3 +171,27 @@ Powered by Chart.js for interactive dashboards
 Author: Pham Nam
 
 Repository: coffee_shop_web
+
+---
+
+## 🤝 Contributing
+```
+Fork the repository
+Create a feature branch (git checkout -b feature/amazing-feature)
+Commit your changes (git commit -m 'Add amazing feature')
+Push to the branch (git push origin feature/amazing-feature)
+Open a Pull Request
+```
+
+## 📄 License
+This project is part of an academic assignment at Hanoi University of Science and Technology.
+
+## 👥 Authors
+Pham Nam - Initial work and development
+#🙏 Acknowledgments
+```
+Hanoi University of Science and Technology
+Real estate data sources for Hanoi market
+Open source libraries and frameworks used
+For questions or support, please contact the development team or create an issue in the repository.
+```
