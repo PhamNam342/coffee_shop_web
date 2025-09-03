@@ -188,7 +188,7 @@ This project is part of an academic assignment at Hanoi University of Science an
 
 ## 👥 Authors
 Pham Nam - Initial work and development
-#🙏 Acknowledgments
+# 🙏 Acknowledgments
 ```
 Hanoi University of Science and Technology
 Real estate data sources for Hanoi market
