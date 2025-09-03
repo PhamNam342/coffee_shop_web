@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NAM Cohhee - Artisanal Bakehouse</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    /* Background gradient động */
+    body {
+      background: linear-gradient(135deg, #112a3b, #1b3a4b, #112a3b);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Navbar */
+    .nav-link {
+      color: white !important;
+      margin-right: 15px;
+      transition: color 0.3s ease;
+    }
+    .nav-link:hover {
+      color: #fdd835 !important;
+    }
+
+    /* Hero section */
+    .hero-section {
+      padding: 100px 30px;
+      animation: fadeInUp 1.2s ease forwards;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 300;
+      line-height: 1.2;
+    }
+    .hero-subtitle {
+      font-size: 2rem;
+      font-weight: 200;
+      margin-bottom: 20px;
+    }
+
+    /* Order Circle fancy */
+    .order-circle {
+      border: 2px solid white;
+      border-radius: 50%;
+      width: 130px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: auto;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+    .order-circle::before {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(#fdd835, transparent, #fdd835);
+      animation: rotateLight 4s linear infinite;
+    }
+    @keyframes rotateLight {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .order-circle::after {
+      content: 'ORDER';
+      position: absolute;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      background: #112a3b;
+      border-radius: 50%;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Slideshow ảnh bánh */
+    .slideshow-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      perspective: 1000px;
+    }
+    .slideshow-container img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+      border-radius: 15px;
+      max-width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transform: scale(1.1);
+    }
+    .slideshow-container img.active {
+      opacity: 1;
+      transform: scale(1);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark px-5">
+    <a class="navbar-brand" href="#"><strong>NAM Cohhee.</strong></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/blog">Story</a></li>
+        <li class="nav-item"><a class="nav-link" href="/menu">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="/order">Order Online</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="container-fluid hero-section">
+    <div class="row align-items-center">
+      <div class="col-md-6 mb-5">
+        <h1 class="hero-title">We Are NAM Cohhee</h1>
+        <p class="hero-subtitle">Artisanal Bakehouse</p>
+        <p class="mt-4">259 Phố Vọng<br>Hai Bà Trưng, Hà Nội</p>
+      </div>
+      <div class="col-md-6 text-center">
+        <div class="order-circle mb-5"></div>
+        <div class="slideshow-container">
+          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80"
+               alt="Cake" class="active" />
+          <img src="https://tse4.mm.bing.net/th/id/OIP.f4J9OGuCXIsDNxuSNrK20QHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
+               alt="Croissant" />
+          <img src="https://tse3.mm.bing.net/th/id/OIP.RJFmEzFedeUOSbyxZz5KYgHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
+               alt="Drink" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let slideIndex = 0;
+    const slides = document.querySelectorAll(".slideshow-container img");
+
+    function showSlides() {
+      slides.forEach(img => img.classList.remove("active"));
+      slideIndex = (slideIndex + 1) % slides.length;
+      slides[slideIndex].classList.add("active");
+    }
+    setInterval(showSlides, 4000);
+  </script>
+</body>
+</html>

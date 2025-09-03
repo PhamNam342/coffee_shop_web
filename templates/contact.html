@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Liên hệ - NAM Coffee</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fcfaf5;
+      color: #4e342e;
+    }
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93');
+      background-size: cover;
+      background-position: center;
+      text-align: center;
+      padding: 120px 20px;
+      color: white;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      font-size: 3rem;
+      font-weight: 700;
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 50px 0 30px;
+      color: #6f4e37;
+    }
+    .info-card {
+      background-color: #fff8f0;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .info-card h5 {
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #6f4e37;
+    }
+    .info-card p, .info-card li {
+      font-weight: 500;
+      line-height: 1.6;
+    }
+    footer {
+      background-color: #4e342e;
+      color: #fff;
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 50px;
+    }
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #4e342e, #6d4c41);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .nav-link {
+      color: #fff !important;
+      transition: color 0.2s ease-in-out;
+    }
+    .nav-link:hover {
+      color: #ffcc80 !important;
+    }
+
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">☕ NAM Coffee</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav fw-semibold">
+        <li class="nav-item"><a class="nav-link" href="index">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu">Thực đơn</a></li>
+        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/order">Order</a></li>
+        {% if session.get('username') %}
+          <li class="nav-item"><a class="nav-link" href="account">👋 Xin chào, {{ session.get('username') }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('log_out') }}">Đăng xuất</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Đăng nhập</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- Hero Section -->
+<div class="position-relative text-center">
+  <video autoplay  loop playsinline class="w-100" style="height: 500px; object-fit: cover;">
+    <source src="/static/video/tvc_coffee.mp4" type="video/mp4">
+    Trình duyệt của bạn không hỗ trợ video.
+  </video>
+<!-- Slogan -->
+  <div class="position-absolute top-50 start-50 translate-middle text-white fw-bold fs-3 text-shadow">
+    Khám phá không gian Nam Cohhee
+  </div>
+</div>
+<!-- Thông tin liên hệ -->
+<div class="container mt-5">
+  <h2 class="section-title">📍 Thông tin liên hệ</h2>
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="info-card text-center">
+        <h5>Địa chỉ</h5>
+        <p>Ngõ 259, Phố Vọng, Hai Bà Trưng, Hà Nội</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="info-card text-center">
+        <h5>Số điện thoại</h5>
+        <p>+84 974 644 276</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="info-card text-center">
+        <h5>Email & Thanh toán</h5>
+        <p>Email: nam1234kan@gmail.com</p>
+        <p>Số tài khoản: 0974644276 - MB Bank</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quá trình thành lập -->
+<div class="container mt-5">
+  <h2 class="section-title">☕ Quá trình thành lập</h2>
+  <div class="row g-4">
+    <div class="col-md-12">
+      <div class="info-card">
+        <p>
+          Khởi nguồn từ niềm đam mê cà phê nguyên chất và mong muốn mang đến những trải nghiệm hương vị tuyệt vời, 
+          NAM Cohhee ra đời vào năm 2005 với một cửa hàng nhỏ giữa lòng thành phố. 
+          Từng hạt cà phê được chọn lọc kỹ lưỡng, từng ly cà phê được pha chế với tận tâm và tình yêu, 
+          nhằm mang lại cho khách hàng những khoảnh khắc thư giãn và hạnh phúc. 
+          Hành trình của chúng tôi là hành trình của sự kiên trì, sáng tạo và đam mê bất tận với cà phê.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tầm nhìn & Sứ mệnh -->
+<div class="container mt-5">
+  <h2 class="section-title">🌟 Tầm nhìn & Sứ mệnh</h2>
+  <div class="row g-4">
+    <div class="col-md-12">
+      <div class="info-card">
+        <p>
+          Tại NAM Coffee, chúng tôi hướng tới việc trở thành điểm đến lý tưởng cho những ai yêu cà phê sạch và chất lượng. 
+          Sứ mệnh của chúng tôi là tạo ra những trải nghiệm cà phê trọn vẹn, từ hương vị đến không gian, 
+          để mỗi ly cà phê không chỉ là thức uống mà còn là khoảnh khắc đáng nhớ trong cuộc sống hằng ngày.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2005 NAM Cohee. Tất cả quyền được bảo lưu.</p>
+  <p>Contact: 0974644276 | Email: nam1234kan@gmail.com</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

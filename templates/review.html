@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đánh giá sản phẩm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #D2B48C;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .product-header img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product-info h2 {
+            margin: 0 0 10px;
+        }
+
+        .average-rating {
+            font-size: 16px;
+            color: orange;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            margin-top: 10px;
+        }
+
+        .back-button a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .star-input {
+            display: flex;
+            gap: 5px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .star-input input {
+            display: none;
+        }
+
+        .star-input label {
+            color: #ccc;
+        }
+
+        .star-input input:checked ~ label,
+        .star-input label:hover,
+        .star-input label:hover ~ label {
+            color: orange;
+        }
+
+        .review-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            resize: vertical;
+        }
+
+        .review-list {
+            margin-top: 30px;
+        }
+
+        .review-item {
+            display: flex;
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .review-content {
+            flex-grow: 1;
+        }
+
+        .review-content .name {
+            font-weight: bold;
+        }
+
+        .review-content .stars {
+            color: orange;
+        }
+
+        .no-review {
+            text-align: center;
+            color: gray;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: orange;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkorange;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="product-header">
+        <img src="{{ product[1] }}" alt="Ảnh món">
+        <div class="product-info">
+            <h2>{{ product[0] }}</h2>
+
+            {% if avg_rating %}
+            <div class="average-rating">⭐ {{ "%.1f"|format(avg_rating) }}/5 từ {{ total_reviews }} đánh giá</div>
+            {% else %}
+            <div class="average-rating text-muted">Chưa có đánh giá</div>
+            {% endif %}
+
+            <div class="back-button"><a href="{{ url_for('menu') }}">← Quay lại Menu</a></div>
+        </div>
+    </div>
+
+    {% if has_bought %}
+    <form method="POST" class="review-form">
+        <h3>{{ user_review and "Chỉnh sửa đánh giá" or "Gửi đánh giá của bạn" }}</h3>
+        <div class="star-input">
+            {% for i in range(5, 0, -1) %}
+                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if user_review and user_review[0] == i %}checked{% endif %}>
+                <label for="star{{ i }}">★</label>
+            {% endfor %}
+        </div>
+        <textarea name="comment" rows="4" placeholder="Viết bình luận...">{{ user_review[1] if user_review else '' }}</textarea>
+        <br><br>
+        <button type="submit">Gửi đánh giá</button>
+    </form>
+    {% else %}
+        <p style="text-align:center; margin-top: 20px; color: gray;">🔒 Chỉ khách hàng đã mua sản phẩm mới có thể đánh giá.</p>
+    {% endif %}
+
+    <div class="review-list">
+        <h3>Đánh giá từ khách hàng:</h3>
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-item">
+                <img src="{{ url_for('static', filename='images/avatar_default.jpg') }}" alt="avatar" class="avatar">
+                <div class="review-content">
+                    <div class="name">{{ review[2] }}</div>
+                    <div class="stars">⭐ {{ review[0] }}/5</div>
+                    <div class="comment">{{ review[1] }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-review">Chưa có bình luận nào.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

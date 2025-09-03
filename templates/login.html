@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nam Cohhee - Đăng nhập</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fef7e5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            background-color: #fffaf0;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        .auth-header h2 {
+            font-weight: bold;
+            color: #6b4c2c;
+        }
+        .auth-header p {
+            color: #9c7b4f;
+        }
+        .form-floating {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-control {
+            border-radius: 12px;
+        }
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: #aaa;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: none;
+            border: none;
+        }
+        .btn-login {
+            background-color: #6b4c2c;
+            color: white;
+            width: 100%;
+            border-radius: 12px;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-login:hover {
+            background-color: #593b1f;
+        }
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #aaa;
+        }
+        .btn-register {
+            background-color: #ffce91;
+            color: #6b4c2c;
+            font-weight: bold;
+            padding: 10px;
+            width: 100%;
+            border-radius: 12px;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+        .btn-register:hover {
+            background-color: #ffc072;
+        }
+        .welcome-text {
+            font-style: italic;
+            color: #c49a6c;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-5">
+                    <div class="auth-card">
+                        <div class="auth-header text-center">
+                            <h2>☕ Chào mừng đến Nam Cohhee!</h2>
+                            <p>Đăng nhập để bắt đầu trải nghiệm</p>
+                        </div>
+                        <div class="auth-body">
+                            <div class="welcome-text text-center">
+                                <p>Hương vị đậm đà, chất lượng tuyệt hảo.</p>
+                            </div>
+
+                            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="user_id" name="user_id" placeholder="Tên người dùng" required>
+                                    <label for="user_id"><i class="fas fa-user me-2"></i>Tên người dùng</label>
+                                </div>
+
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Mật khẩu" required>
+                                    <label for="password"><i class="fas fa-lock me-2"></i>Mật khẩu</label>
+                                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                                        <i class="fas fa-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+
+                                <button type="submit" class="btn-login">
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    Đăng nhập
+                                </button>
+                            </form>
+
+                            <div class="divider">
+                                <span>hoặc</span>
+                            </div>
+
+                            <a href="{{ url_for('register') }}" class="btn-register">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Tạo tài khoản mới
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.btn-login');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang đăng nhập...';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>

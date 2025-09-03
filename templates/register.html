@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký tài khoản - Nam Cohhee</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                  url("https://images.unsplash.com/photo-1509042239860-f550ce710b93") no-repeat center center/cover;
+      font-family: 'Quicksand', sans-serif;
+      min-height: 100vh;
+    }
+    .auth-container {
+      padding-top: 80px;
+    }
+    .auth-card {
+      background-color: #fff8f0;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      border: 2px solid #d2b48c;
+    }
+    .auth-header h2 {
+      font-weight: 700;
+      color: #6f4e37;
+    }
+    .auth-header p {
+      color: #8b5e3c;
+      font-size: 15px;
+    }
+    .form-floating label {
+      color: #6f4e37;
+    }
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      color: #6f4e37;
+    }
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #6f4e37;
+    }
+    .btn-register {
+      width: 100%;
+      background-color: #6f4e37;
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    .btn-register:hover {
+      background-color: #8b5e3c;
+    }
+    .btn-login {
+      width: 100%;
+      background-color: #3c7a3c;
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    .btn-login:hover {
+      background-color: #2d5d2d;
+    }
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+    }
+    .divider span {
+      background-color: #fff8f0;
+      padding: 0 12px;
+      position: relative;
+      z-index: 1;
+      color: #6f4e37;
+      font-weight: 600;
+    }
+    .divider::before {
+      content: '';
+      height: 1px;
+      background: #d2b48c;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      z-index: 0;
+    }
+    .features-list ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .features-list li {
+      margin-bottom: 8px;
+      color: #6f4e37;
+      font-weight: 500;
+    }
+    .features-list i {
+      color: #3c7a3c;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container auth-container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="auth-card">
+          <div class="auth-header text-center mb-4">
+            <h2>Đăng ký tài khoản</h2>
+            <p>Trở thành một phần của Nam Cohhee</p>
+          </div>
+          <form method="POST" action="/register">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="userID" name="userID" placeholder="User ID">
+              <label for="userID">User ID</label>
+              <i class="fa fa-user input-icon"></i>
+            </div>
+
+            <div class="form-floating">
+              <input type="password" class="form-control" id="password" name="password" placeholder="Mật khẩu" required>
+              <label for="password"><i class="fas fa-lock me-2"></i>Mật khẩu</label>
+              <button type="button" class="password-toggle" onclick="togglePassword()">
+                <i class="fas fa-eye" id="toggleIcon"></i>
+              </button>
+            </div>
+
+            <div class="form-floating">
+              <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Họ và tên">
+              <label for="fullname">Họ và tên</label>
+              <i class="fa fa-user input-icon"></i>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="phone" name="phone" placeholder="Số điện thoại">
+              <label for="phone">Số điện thoại</label>
+              <i class="fa fa-phone input-icon"></i>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="Address" name="Address" placeholder="Địa chỉ">
+              <label for="Address">Địa chỉ</label>
+              <i class="fa fa-location-dot input-icon"></i>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+              <label for="email">Email</label>
+              <i class="fa fa-envelope input-icon"></i>
+            </div>
+            <div class="mb-3">
+              <label for="gender" class="form-label">Giới tính</label>
+              <select class="form-select" id="gender" name="gender">
+                <option value="">-- Chọn giới tính --</option>
+                <option value="M">Nam</option>
+                <option value="F">Nữ</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-register">Đăng ký</button>
+            <div class="divider"><span>hoặc</span></div>
+            <a href="/login" class="btn-login">Đăng nhập</a>
+          </form>
+
+          <div class="features-list mt-4">
+            <ul>
+              <li><i class="fa fa-check-circle"></i> Nhận ưu đãi đặc biệt</li>
+              <li><i class="fa fa-check-circle"></i> Quản lý đơn hàng dễ dàng</li>
+              <li><i class="fa fa-check-circle"></i> Tích lũy điểm thưởng</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.getElementById('toggleIcon');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trang chính - NAM Cohhee</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #fcfcfa;
+      font-family: 'Quicksand', sans-serif;
+    }
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #4e342e, #6d4c41);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .nav-link {
+      color: #fff !important;
+      transition: color 0.2s ease-in-out;
+    }
+    .nav-link:hover {
+      color: #ffcc80 !important;
+    }
+
+    /* Hero */
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 120px 20px;
+      text-align: center;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .hero .btn {
+      position: relative;
+      z-index: 1;
+      padding: 0.75rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      border: none;
+      background: #ffcc80;
+      color: #4e342e;
+      transition: 0.3s;
+    }
+    .hero .btn:hover {
+      background: #ffc107;
+      transform: scale(1.05);
+    }
+
+    /* Product Card */
+    .card {
+      border: none;
+      border-radius: 15px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card img {
+      border-radius: 15px 15px 0 0;
+      height: 200px;
+      object-fit: cover;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .card-title {
+      font-weight: 600;
+      color: #4e342e;
+    }
+    .card p {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #b12704;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-weight: 700;
+      text-align: center;
+      margin-top: 50px;
+      margin-bottom: 30px;
+      color: #4e342e;
+      font-size: 2rem;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #4e342e;
+      color: #fff;
+    }
+    footer p {
+      margin: 0;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">☕ NAM Cohhee</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav fw-semibold">
+        <li class="nav-item"><a class="nav-link" href="index">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu">Thực đơn</a></li>
+        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
+        <li class="nav-item"><a class="nav-link" href="order">Order</a></li>
+        {% if session.get('username') %}
+          <li class="nav-item"><a class="nav-link" href="account">👋 Xin chào, {{ session.get('username') }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('log_out') }}">Đăng xuất</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Đăng nhập</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="position-relative text-center">
+  <video autoplay  loop playsinline class="w-100" style="height: 500px; object-fit: cover;">
+    <source src="/static/video/tvc_coffee.mp4" type="video/mp4">
+    Trình duyệt của bạn không hỗ trợ video.
+  </video>
+  
+  <!-- Slogan -->
+  <div class="position-absolute top-50 start-50 translate-middle text-white fw-bold fs-3 text-shadow">
+    Bắt đầu đam mê của bạn bằng ly coffee
+  </div>
+</div>
+
+<!-- Danh mục sản phẩm -->
+<div class="container mt-5">
+  <h2 class="section-title">🌟 Danh mục sản phẩm bán chạy nhất 🌟</h2>
+  <div class="row g-4 justify-content-center">
+    {% for p in products %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <img src="{{ p.image_url }}" class="card-img-top" alt="{{ p.name }}">
+        <div class="card-body text-center">
+          <h5 class="card-title">{{ p.name }}</h5>
+          <p>{{ '{:,.0f}'.format(p.price) }} USD</p>
+          <a href="#" class="btn btn-sm btn-outline-dark">Xem thêm</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<!-- Blog Section -->
+<div class="container mt-5">
+  <h2 class="section-title">📝 Blog nổi bật</h2>
+  <div class="row g-4 justify-content-center">
+    {% for blog in blogs %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <img src="{{ blog.image_url }}" class="card-img-top" alt="{{ blog.title }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ blog.title }}</h5>
+          <p class="card-text">{{ blog.content[:100] }}{% if blog.content|length > 100 %}...{% endif %}</p>
+          <a href="{{ url_for('blog_detail', blog_id=blog.id) }}" class="btn btn-sm btn-outline-dark">Xem chi tiết</a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">Chưa có bài blog nào.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center mt-5 py-4">
+  <p>&copy;©2025 NAM Cohhee. Tất cả quyền được bảo lưu.</p>
+  <p> Contact: 0974644276 </p>
+  <div class="social-links mt-2">
+    <a href="https://www.facebook.com/share/1B1Y4CbxdF/" target="_blank" class="mx-2 text-dark">
+      <i class="fab fa-facebook fa-lg"></i>
+    </a>
+    <a href="https://www.instagram.com/nampham9665?igsh=ZGFtcmdncTE4cWh1" target="_blank" class="mx-2 text-dark">
+      <i class="fab fa-instagram fa-lg"></i>
+    </a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
