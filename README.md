@@ -51,32 +51,36 @@ flowchart TD
     B --> G[Create Vouchers / Promotions]
     B --> H[View Revenue & Analytics Charts]
 🏗️ Architecture & Tech Stack
-
-Frontend
+```
+### Frontend
 
 HTML5, CSS3, JavaScript, Bootstrap 5
-
 Responsive UI, dynamic dashboard, interactive charts
 
-Backend
+---
+
+
+### Backend
 
 Python (Flask)
-
 RESTful API, authentication, email verification, business logic
 
-Database
+---
+
+### Database
 
 PostgreSQL
-
 Normalized relational schema: users, orders, products, blogs, vouchers, shifts
 
-Email
+---
+
+### Email
 
 Gmail SMTP (for registration verification)
-
 Analytics
-
 Chart.js / JS libraries
+
+---
 
 Interactive charts for spending, revenue, and performance
 
@@ -94,23 +98,29 @@ Favorites & Vouchers: favorites, vouchers, voucher_customers
 
 Shift Management: shift
 
+---
+
 ⚙️ Installation & Setup
 
 Clone the repository
-
+```
 git clone https://github.com/PhamNam342/coffee_shop_web.git
 cd coffee_shop_web
+```
+
+---
 
 
 Create a virtual environment & install dependencies
-
+```
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
 venv\Scripts\activate      # Windows
 pip install -r requirements.txt
+```
+---
 
-
-Configure the database
+## Configure the database
 
 Create PostgreSQL database coffee_shop
 
@@ -119,14 +129,16 @@ Import schema (if provided)
 Update config.py with your database credentials
 
 Run the application
-
+```
 python app.py
+```
 
+---
 
-Access the app
+## Access the app
 👉 http://127.0.0.1:5000/
 
-🔒 Security
+## 🔒 Security
 
 Passwords hashed securely
 
@@ -136,7 +148,7 @@ Role-based access: Admin / Customer
 
 Input validation on all forms
 
-📊 Analytics & Visualization
+## 📊 Analytics & Visualization
 
 Customer: spending insights, most purchased products
 
@@ -144,7 +156,7 @@ Admin: revenue overview, top-selling products, employee performance
 
 Powered by Chart.js for interactive dashboards
 
-📞 Contact
+## 📞 Contact
 
 Author: Pham Nam
 
