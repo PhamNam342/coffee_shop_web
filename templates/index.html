@@ -112,7 +112,11 @@
     footer p {
       margin: 0;
     }
-
+    #notif-badge {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body>
@@ -126,13 +130,22 @@
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav fw-semibold">
-        <li class="nav-item"><a class="nav-link" href="index">Trang chủ</a></li>
-        <li class="nav-item"><a class="nav-link" href="menu">Thực đơn</a></li>
+        <li class="nav-item"><a class="nav-link" href="/index">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/menu">Thực đơn</a></li>
         <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
         <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
-        <li class="nav-item"><a class="nav-link" href="order">Order</a></li>
+        <li class="nav-item"><a class="nav-link" href="/order">Order</a></li>
+        <li class="nav-item">
+          <a class="nav-link active position-relative" href="/notifications">
+            <i class="fa fa-bell position-relative">
+              <span id="notif-badge"
+                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle {% if unread_count == 0 %}d-none{% endif %}">
+              </span>
+            </i>
+          </a>
+        </li>
         {% if session.get('username') %}
-          <li class="nav-item"><a class="nav-link" href="account">👋 Xin chào, {{ session.get('username') }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="/account">👋 Xin chào, {{ session.get('username') }}</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('log_out') }}">Đăng xuất</a></li>
         {% else %}
           <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Đăng nhập</a></li>

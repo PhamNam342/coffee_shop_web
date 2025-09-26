@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chọn phương thức thanh toán</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f3f7;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .payment-wrapper {
+      width: 450px;
+      max-width: 100%;
+    }
+
+    .payment-container {
+      background: #fff;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+      padding: 25px;
+      box-sizing: border-box;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .header img {
+      height: 40px;
+      margin-right: 12px;
+    }
+
+    .header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      flex: 1;
+      text-align: left;
+    }
+
+    .search-box {
+      margin: 15px 0 25px 0;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    .search-box input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 6px rgba(0,123,255,0.3);
+      outline: none;
+    }
+
+    .bank-section {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .bank-section h3 {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .bank-card {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+      min-height: 70px;
+    }
+
+    .bank-card img {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .bank-card:hover {
+      background: #fff;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+
+    .other-payments {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .other-payments img {
+      height: 28px;
+    }
+
+    h3 span {
+      font-weight: bold;
+    }
+
+    h3 span .red {
+      color: #e60012;
+    }
+
+    h3 span .blue {
+      color: #1E90FF;
+    }
+
+    /* Footer nằm ngay dưới khung thanh toán, cùng width */
+    .footer-container {
+      background: #fff;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+      padding: 15px 20px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: #555;
+      margin-top: -8px; /* ghép khớp với bo góc trên của footer */
+    }
+
+    .footer-container a {
+      color: #007bff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .footer-container a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-wrapper">
+    <div class="payment-container">
+      <div class="header">
+        <img src="/static/logo/vnpay.jpg" alt="VNPay">
+        <h2>Chọn phương thức thanh toán (Test)</h2>
+      </div>
+
+      <div class="payment-modal">
+        <h3>Chọn ngân hàng</h3>
+        <div class="search-box">
+          <input type="text" id="searchBox" placeholder="Tìm kiếm ngân hàng...">
+        </div>
+
+        <form action="/login_bank" method="POST">
+          <div class="bank-grid" id="bankGrid">
+            <button type="submit" name="bank_code" value="VCB" class="bank-card"><img src="/static/logo/vietcombank.jpg" alt="Vietcombank"></button>
+            <button type="submit" name="bank_code" value="ACB" class="bank-card"><img src="/static/logo/acb.jpg" alt="ACB"></button>
+            <button type="submit" name="bank_code" value="TCB" class="bank-card"><img src="/static/logo/techcombank.png" alt="Techcombank"></button>
+            <button type="submit" name="bank_code" value="BIDV" class="bank-card"><img src="/static/logo/bidv.png" alt="BIDV"></button>
+            <button type="submit" name="bank_code" value="MB" class="bank-card"><img src="/static/logo/mb.png" alt="MB"></button>
+            <button type="submit" name="bank_code" value="Agribank" class="bank-card"><img src="/static/logo/Agribank.png" alt="Agribank"></button>
+            <button type="submit" name="bank_code" value="SHB" class="bank-card"><img src="/static/logo/SHB.png" alt="SHB"></button>
+            <button type="submit" name="bank_code" value="TPBank" class="bank-card"><img src="/static/logo/TPBank.jpg" alt="TPBank"></button>
+            <button type="submit" name="bank_code" value="Vietinbank" class="bank-card"><img src="/static/logo/vietinbank.jpg" alt="Viettinbank"></button>
+            <button type="submit" name="bank_code" value="VPBank" class="bank-card"><img src="/static/logo/VPBank.jpg" alt="VPBank"></button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bank-section">
+        <h3>Thẻ thanh toán quốc tế</h3>
+        <div class="other-payments">
+          <img src="/static/logo/Visa.jpg" alt="Visa">
+          <img src="/static/logo/mastercard.png" alt="Mastercard">
+          <img src="/static/logo/jcp.png" alt="JCB">
+          <img src="/static/logo/vnpay.jpg" alt="Amex">
+        </div>
+      </div>
+
+      <div class="bank-section">
+        <h3>
+          Ứng dụng 
+          <span><span class="red">VN</span><span class="blue">Pay</span></span>
+        </h3>
+        <div class="other-payments">
+          <img src="/static/logo/vnpay.jpg" alt="VNPay">
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-container">
+      <a href="tel:19005655">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M3.654 1.328a.678.678 0 0 1 .736-.073l2.2 1.1a.678.678 0 0 1 .315.42l.7 3.05a.678.678 0 0 1-.168.63l-1.2 1.2a11.72 11.72 0 0 0 5.25 5.25l1.2-1.2a.678.678 0 0 1 .63-.168l3.05.7a.678.678 0 0 1 .42.315l1.1 2.2a.678.678 0 0 1-.073.736l-2.2 2.2a1.745 1.745 0 0 1-1.98.38c-2.05-1-4.01-2.96-5.01-5.01a1.745 1.745 0 0 1 .38-1.98l2.2-2.2z"/>
+        </svg>
+        1900.5655
+      </a>
+      <span>/</span>
+      <a href="mailto:support@example.com">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-5.857 3.514L15 12.383V5.383zM14.8 13H1.2l5.857-3.486L14.8 13zm-13-.617V12.383l5.857-3.486L1.8 12.383z"/>
+        </svg>
+        support@example.com
+      </a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('searchBox').addEventListener('keyup', function() {
+      let filter = this.value.toLowerCase();
+      let cards = document.querySelectorAll('.bank-card');
+      cards.forEach(card => {
+        let text = card.innerText.toLowerCase();
+        card.style.display = text.includes(filter) ? 'flex' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

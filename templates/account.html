@@ -67,24 +67,38 @@
     footer p {
       margin: 0;
     }
+    #notif-badge {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container">
-    <a class="navbar-brand" href="#">☕ NAM Coffee</a>
+    <a class="navbar-brand" href="#">☕ NAM Cohhee</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav fw-semibold">
-        <li class="nav-item"><a class="nav-link" href="index">Trang chủ</a></li>
-        <li class="nav-item"><a class="nav-link" href="menu">Thực đơn</a></li>
+        <li class="nav-item"><a class="nav-link" href="/index">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/menu">Thực đơn</a></li>
         <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
         <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
-        <li class="nav-item"><a class="nav-link" href="order">Order</a></li>
+        <li class="nav-item"><a class="nav-link" href="/order">Order</a></li>
+        <li class="nav-item">
+          <a class="nav-link active position-relative" href="/notifications">
+            <i class="fa fa-bell position-relative">
+              <span id="notif-badge"
+                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle {% if unread_count == 0 %}d-none{% endif %}">
+              </span>
+            </i>
+          </a>
+        </li>
         {% if session.get('username') %}
-          <li class="nav-item"><a class="nav-link" href="account">👋 Xin chào, {{ session.get('username') }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="/account">👋 Xin chào, {{ session.get('username') }}</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('log_out') }}">Đăng xuất</a></li>
         {% else %}
           <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Đăng nhập</a></li>
@@ -96,18 +110,14 @@
   <div class="container mt-5">
     <div class="card p-4">
       <div class="row align-items-center">
-        <!-- Avatar -->
         <div class="col-md-3 text-center">
   <img src="{{ customer[4] or url_for('static', filename='images/avatar_default.jpg') }}" alt="Avatar" class="avatar mb-3" id="avatar-img">
   <h5 class="mt-2 text-uppercase" style="color: #6f4e37;">{{ customer[0] }}</h5>
-
-  <!-- Form thay avatar ngay trên cùng trang -->
   <form method="POST" enctype="multipart/form-data" id="avatar-form">
     <input type="file" name="avatar" id="avatar-input" accept="image/*" style="display:none;">
     <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('avatar-input').click();">Thay avatar</button>
   </form>
 </div>
-        <!-- Thông tin cá nhân -->
         <div class="col-md-9">
           <h4 class="section-title">Thông tin cá nhân</h4>
           <ul class="list-unstyled">
@@ -196,9 +206,8 @@
         <td>{{ order[4] }}</td>
         <td>{{ order[5] }}</td>
         <td>{{ order[6] }}</td>
-        <td>{{ "{:,.0f}".format(order[7]) }}USD</td>
+        <td>{{ "{:,.2f}".format(order[7]) }}USD</td>
         <td>
-            <!-- Form chỉnh sửa trạng thái -->
             {% if order[3] == 'Delivered' %}
     <form action="{{ url_for('confirm_received', order_id=order[0]) }}" method="post" class="mt-2">
       <button type="submit" class="btn btn-sm btn-success w-100">Nhận hàng</button>
@@ -216,7 +225,6 @@
             </table>
         </div>
     </div>
-      <!-- Lịch sử đơn hàng -->
       <h4 class="section-title">Lịch sử đơn hàng</h4>
       {% if orders %}
       <div class="table-responsive">
@@ -246,8 +254,6 @@
       {% else %}
       <p class="text-muted">Chưa có đơn hàng nào.</p>
       {% endif %}
-
-      <!-- Biểu đồ tiêu dùng -->
       <h4 class="section-title mt-5">Biểu đồ tiêu dùng 3 tháng gần nhất</h4>
       <canvas id="spendingChart" height="100"></canvas>
       <script>

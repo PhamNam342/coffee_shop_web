@@ -1,12 +1,13 @@
 from functools import wraps
 from flask import Flask, flash, jsonify, redirect, url_for, render_template, request,session
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from flask_mail import Mail, Message
 import random
 import string
 import psycopg2
 import os
 from werkzeug.utils import secure_filename
+import time
 app = Flask(__name__)
 app.config["SECRET_KEY"]="Namdz"
 app.permanent_session_lifetime = timedelta(minutes= 4)
@@ -30,8 +31,9 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'nam1234kan@gmail.com'
 app.config['MAIL_PASSWORD'] = 'vtxuvfxjtpuwjbji'  # App password, không phải password Gmail thường
-
 mail = Mail(app)
+def generate_txid(length=16):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 def get_db_connection():
     return psycopg2.connect(**DB_CONFIG)
@@ -42,6 +44,29 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args,**kwargs)
     return decorated_function
+@app.context_processor
+def inject_unread_count():
+    if "user_id" not in session:
+        return dict(unread_count=0)
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    user_id = session.get("user_id")
+
+    cur.execute("SELECT customer_id FROM customer WHERE user_id = %s", (user_id,))
+    customer = cur.fetchone()
+    if not customer:
+        return dict(unread_count=0)
+
+    customer_id = customer[0]
+
+    cur.execute("SELECT COUNT(*) FROM notifications WHERE customer_id = %s AND is_read = false", (customer_id,))
+    unread_count = cur.fetchone()[0]
+
+    cur.close()
+    conn.close()
+
+    return dict(unread_count=unread_count)
 
 @app.route('/index')
 def index():
@@ -370,8 +395,6 @@ def submit_order():
     user_id = session.get('user_id')
     conn = get_db_connection()
     cur = conn.cursor()
-
-    # tim customer_id
     cur.execute("Select customer_id from customer WHERE customer.user_id = %s",(user_id,))
     customerID_row = cur.fetchone()
     if not customerID_row:
@@ -379,8 +402,6 @@ def submit_order():
         conn.close()
         return jsonify({'error': 'Không tìm thấy khách hàng'}), 400
     customerID = customerID_row[0]
-
-    # Nếu có mã discount thì lấy số tiền giảm
     if discount_code:
         cur.execute("""
             SELECT v.discount_usd,vcus.customer_id,v.voucher_id FROM vouchers v
@@ -398,7 +419,6 @@ def submit_order():
     if not isinstance(note, str):
         note = str(note)
 
-    # Nếu destination rỗng → lấy từ bảng customer
     if destination.strip() == "":
         cur.execute("""
             SELECT address
@@ -420,6 +440,8 @@ def submit_order():
         item_total = price * quantity
         total_amount += item_total
     total_amount -= discount_amount
+    session['amount'] = total_amount
+
     if total_amount <= 0:
         total_amount =0
     now = datetime.now()
@@ -429,7 +451,10 @@ def submit_order():
         INSERT INTO orders (order_id,customer_id, date_time, total_amount,destination,note)
         VALUES (%s, %s, %s,%s,%s,%s)
     """, (new_id, customerID, now, total_amount,destination,note))
-
+    message = f"Đơn hàng của bạn đã được tạo thành tiền {total_amount} $"
+    cur.execute("""
+    Insert into notifications(customer_id, message, is_read, created_at) VALUES (%s,%s,%s,NOW())
+                """,(customerID, message,False))
     # Thêm từng item
     for item in items:
         name = item['name']
@@ -731,7 +756,6 @@ def update_avatar():
 @app.route('/confirm_received/<int:order_id>', methods=['POST'])
 @login_required
 def confirm_received(order_id):
-    # Cập nhật trạng thái đơn hàng thành 'Completed' hoặc 'Received'
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("UPDATE orders SET status = %s WHERE order_id = %s", ('Completed', order_id))
@@ -1034,7 +1058,7 @@ def add_customer():
     cur = conn.cursor()
     cur.execute("Select COUNT(*) FROM employee")
     customer_row= cur.fetchone()
-    customerID = customer_row[0] + 1 # employee_row la 1 tuple
+    customerID = customer_row[0] + 1 
     cur.execute("""
         INSERT INTO customer (customer_id,full_name, phone_number,address, gender)
         VALUES (%s,%s, %s, %s, %s, %s)
@@ -1085,8 +1109,13 @@ def update_order_status(order_id):
     next_status = request.form['status']
     conn = get_db_connection()
     cur = conn.cursor()
-   
     cur.execute("UPDATE orders SET status = %s WHERE order_id = %s", (next_status, order_id))
+    cur.execute("Select customer_id from orders WHERE order_id = %s",(order_id,))
+    customerID = cur.fetchone()[0]
+    if next_status == 'delivered':
+        message = f"Đơn hàng của bạn đang được giao tới hãy để ý điện thoại"
+    message = f"Đơn hàng của bạn đã chuyển sang trạng thái {next_status}"
+    cur.execute("Insert into notifications (customer_id, message,is_read, created_at) VALUES (%s,%s,%s, NOW())",(customerID, message, False))
     conn.commit()
     cur.close()
     conn.close()
@@ -1157,7 +1186,6 @@ def admin_shift():
         for r in cur.fetchall()
     ]
 
-    # Ca làm những ngày trước
     cur.execute("""
         SELECT e.employee_id, e.full_name, s.date, s.shift_amount
         FROM shift s
@@ -1169,8 +1197,6 @@ def admin_shift():
         {"employee_id": r[0], "full_name": r[1], "date": r[2], "shift_amount": r[3]}
         for r in cur.fetchall()
     ]
-
-    # Danh sách nhân viên cho dropdown
     cur.execute("SELECT employee_id, full_name FROM employee ORDER BY full_name")
     employees = [
         {"employee_id": r[0], "full_name": r[1]}
@@ -1261,13 +1287,15 @@ def add_voucher():
                 INSERT INTO voucher_customers (voucher_id, customer_id)
                 VALUES (%s, %s)
             """, (voucherID, customer_id))
-
+            message = f"Bạn có thêm voucher mới{code} có giá trị {discount_amount} $ hết hạn lúc {end_date}"
+            cur.execute("""
+                Insert into notifications (customer_id, message,is_read, created_at) VALUES(%s,%s,%s,NOW())
+                """,(customer_id, message,False))
         conn.commit()
         cur.close()
         conn.close()
 
         return redirect('/admin/voucher')
-     # Lấy voucher đã có
     cur.execute("""
         SELECT v.code, v.discount_usd, v.expiry_date, v.description,
                STRING_AGG(c.full_name || ' (' || c.phone_number || ')', ', ') AS customer_names
@@ -1282,7 +1310,6 @@ def add_voucher():
         for row in cur.fetchall()
     ]
 
-    # Lấy danh sách khách hàng để hiển thị
     cur.execute("SELECT customer_id, full_name,phone_number FROM customer")
     customers = cur.fetchall()
     cur.close()
@@ -1291,10 +1318,7 @@ def add_voucher():
     return render_template('admin_voucher.html', customers=customers, vouchers=vouchers)
 def generate_unique_code(cur, length=8):
     while True:
-        # Sinh code random, ví dụ: ABC123XY
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-        
-        # Kiểm tra xem code này đã tồn tại chưa
         cur.execute("SELECT COUNT(*) FROM vouchers WHERE code = %s", (code,))
         if cur.fetchone()[0] == 0:
             return code
@@ -1303,7 +1327,6 @@ def statistics():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # 1. Lương nhân viên từ đầu tháng
     cur.execute("""
         SELECT e.employee_id, e.full_name, COUNT(s.shift_amount) AS total_shifts,
                COUNT(s.shift_amount) * 3 AS salary_usd
@@ -1314,8 +1337,6 @@ def statistics():
         ORDER BY salary_usd DESC;
     """)
     salaries = cur.fetchall()
-
-    # 2. Top 10 khách mua nhiều nhất
     cur.execute("""
         SELECT c.full_name,c.address,c.phone_number,c.customer_type, SUM(o.total_amount) AS total_spent
         FROM customer c
@@ -1489,20 +1510,38 @@ def blog_like():
 
 @app.route("/blog/comment", methods=["POST"])
 def blog_comment():
+    if "user_id" not in session:
+        return jsonify({"error": "Bạn cần đăng nhập để bình luận"}), 403
+
     conn = get_db_connection()
-    cur= conn.cursor()
+    cur = conn.cursor()
+
     blog_id = request.form["blog_id"]
     text = request.form["text"]
-    user_id = session.get('user_id')
-    cur.execute("Select customer_id from customer where customer.user_id =%s",(user_id,))
-    customerID = cur.fetchone()[0]
-    created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
-    cur.execute("INSERT INTO blog_comments (blog_id, customer_id, content) VALUES (%s,%s,%s)",
-                (blog_id, customerID, text))
+    user_id = session.get("user_id")
+    cur.execute("SELECT customer_id, full_name, img_url FROM customer WHERE user_id = %s", (user_id,))
+    row = cur.fetchone()
+    if not row:
+        return jsonify({"error": "Không tìm thấy người dùng"}), 404
+
+    customerID, name, avatar_url = row
+    if not avatar_url:
+        avatar_url = "/static/img/default_avatar.png"
+
+    created_at = datetime.now()
+    cur.execute(
+        "INSERT INTO blog_comments (blog_id, customer_id, content, created_at) VALUES (%s,%s,%s,%s)",
+        (blog_id, customerID, text, created_at)
+    )
     conn.commit()
     cur.close()
     conn.close()
-    return jsonify({"user_id": user_id, "content": text, "created_at": created_at})
+    return jsonify({
+        "user": name,
+        "avatar_url": avatar_url,
+        "content": text,
+        "created_at": created_at.strftime("%Y-%m-%d %H:%M")
+    })
 
 
 # Route form thêm blog
@@ -1516,17 +1555,23 @@ def add_blog():
         content = request.form['content']
         file = request.files['image']
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)  # tránh tên file xấu
+            filename = secure_filename(file.filename) 
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
-            image_url = f"/static\images\{filename}"  # đường dẫn để lưu DB
+            image_url = f"/static\images\{filename}"  
 
             cur.execute("""
                     Select COUNT(*) from blog    
                         """)
             blog_id = cur.fetchone()[0] +1 
             cur.execute("Insert into blog VALUES(%s,%s,%s,%s)",(blog_id,title,content,image_url,))
+            message = f"Đã có blog mới về <b style='color:brown'>{title}</b>, hãy cùng khám phá ngay thôi nào!"
+            cur.execute("Select customer_id from customer")
+            customers = cur.fetchall()
+            for cus in customers:
+                customer_id = cus[0]
+                cur.execute("Insert into notifications (customer_id, message,is_read,created_at) VALUES(%s,%s,%s,NOW())",(customer_id,message,False))
             conn.commit()
             cur.close()
             conn.close()
@@ -1575,9 +1620,160 @@ def update_user_info():
     except Exception as e:
         print(str(e))
         return jsonify({'success': False, 'message': str(e)})
-if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=True,
+@app.route("/notifications")
+@login_required
+def notifications_page():
+    return render_template("notice.html") 
+@app.route("/notification")
+@login_required
+def notification():
+        conn = get_db_connection()
+        cur= conn.cursor()
+        user_id = session.get("user_id")
+        cur.execute("Select customer_id from customer WHERE user_id = %s",(user_id,))
+        customerid = cur.fetchone()[0]
+        cur.execute("Select * from notifications WHERE customer_id = %s ORDER BY created_at DESC",(customerid,))
+        notifications = cur.fetchall()
+        notification_list=[
+            {
+                "id" : n[0],
+                "message" : n[2],
+                "is_read" : n[3],
+                "time": n[4].strftime("%Y-%m-%d %H:%M")
+
+            }
+            for n in notifications
+        ]
+        return jsonify(notification_list)
+@app.route("/notifications/read/<int:notif_id>", methods=["POST"])
+def mark_notification_as_read(notif_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE notifications SET is_read = TRUE WHERE id = %s", (notif_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"success": True})
+@app.route("/pay", methods=["POST"])
+def pay():
+    method = request.form.get("payment_method")
+    order_id = request.form.get("order_id")
+
+    if method == "cash":
+        return f"Đơn hàng {order_id} sẽ thanh toán tiền mặt."
+    elif method == "qr":
+        return redirect(url_for("choose_bank", order_id=order_id))
+@app.route("/choose_bank")
+def choose_bank():
+    return render_template("choose_bank.html")
+
+@app.route("/login_bank", methods=["POST"])
+def login_bank():
+    conn = get_db_connection()
+    cur= conn.cursor()
+    user_id = session.get("user_id")
+    if not user_id:
+            print("Session user_id không tồn tại!", flush=True)
+            return redirect(url_for("login"))
+    cur.execute("Select customer_id from customer WHERE user_id = %s",(user_id,))
+    customerid = cur.fetchone()[0]
+    cur.execute("Select email from customer WHERE customer_id = %s",(customerid,))
+    email = cur.fetchone()[0]
+    otp_code = str(random.randint(100000, 999999))  
+    session["otp"] = otp_code
+    msg = Message("Mã OTP xác thực thanh toán",sender=app.config['MAIL_USERNAME'], recipients=[email])
+    msg.body = f"Mã OTP của bạn là: {otp_code}. Vui lòng nhập trong vòng 5 phút."
+    mail.send(msg)
+    session["otp_expire"] = time.time() + 300 
+    print("OTP gửi tới email:", otp_code, flush=True) 
+    bank_name = request.form.get("bank_code")
+    amount = float(session.get("amount",0))
+    transaction_code = generate_txid(32)
+    bank_info = {
+        "VCB": {
+            "name": "Vietcombank",
+            "logo": "/static/logo/vietcombank.jpg"
+        },
+        "NCB": {
+            "name": "NCB",
+            "logo": "/static/logo/vietcombank.jpg"
+        },
+        "ACB": {
+            "name": "ACB",
+            "logo": "/static/logo/acb.jpg"
+        },
+        "TCB": {
+            "name": "Techcombank",
+            "logo": "/static/logo/techcombank.png"
+        },
+        "MB":{
+            "name": "MB Bank",
+            "logo": "/static/logo/mb.png"
+        },
+        "BIDV":{
+            "name": "BIDV",
+            "logo": "/static/logo/bidv.png"
+        },
+        "Agribank":{
+            "name": "Agribank",
+            "logo": "/static/logo/Agribank.png"
+        },
+        "NAMA":{
+            "name": "NAMA",
+            "logo": "/static/logo/NAMA.jpg"
+        },
+        "SHB":{
+            "name": "SHB",
+            "logo": "/static/logo/SHB.png"
+        },
+        "TPBank":{
+            "name": "TPBank",
+            "logo": "/static/logo/TPBank.jpg"
+        },
+        "Vietinbank":{
+            "name": "VietinBank",
+            "logo": "/static/logo/vietinbank.jpg"
+        },
+        "VPBank":{
+            "name": "VPBank",
+            "logo": "/static/logo/VPBank.jpg"
+        }
+
+    }
+
+    selected_bank = bank_info.get(bank_name, {})
+    return render_template(
+        "bank_login.html",
+        bank=selected_bank,
+        amount=amount,
+        transaction_code=transaction_code
     )
+
+@app.route("/confirm_otp", methods=["GET", "POST"])
+def confirm_otp():
+    if request.method == "GET":
+        return render_template("otp_bank.html", message="Mã OTP đã được gửi. Vui lòng nhập trong 5 phút.")
+    else:  
+        otp = request.form.get("otp")
+        saved_otp = session.get("otp")
+        expire_time = session.get("otp_expire")
+        if not saved_otp or not expire_time:
+            return render_template("otp_bank.html", error="⚠️ OTP không tồn tại hoặc đã hết hạn.")
+
+        if time.time() > expire_time:
+            return render_template("otp_bank.html", error="❌ OTP đã hết hạn, vui lòng yêu cầu gửi lại.")
+        print(otp)
+        if otp == saved_otp:
+            session.pop("otp", None)
+            session.pop("otp_expire", None)
+            return redirect(url_for("index"))
+        else:
+            return redirect(url_for("confirm_otp"))
+
+@app.route("/payment_return")
+def payment_return():
+    return "✅ Thanh toán thành công (giả lập)!"
+
+if __name__ == "__main__":
+    app.run(debug=True)
+

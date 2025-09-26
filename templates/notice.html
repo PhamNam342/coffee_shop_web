@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thông báo - NAM Cohhee</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      background-color: #fcfcfa;
+      font-family: 'Segoe UI', sans-serif;
+      padding-bottom: 100px; 
+    }
+    .navbar {
+      background: linear-gradient(90deg, #4e342e, #6d4c41);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .nav-link {
+      color: #fff !important;
+      transition: color 0.2s ease-in-out;
+    }
+    .nav-link:hover {
+      color: #ffcc80 !important;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #7b4f35;
+      color: white;
+      padding: 20px 0;
+    }
+    #notif-badge {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .notif-item {
+    transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .notif-item:hover {
+     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">☕ NAM Cohhee</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav fw-semibold">
+        <li class="nav-item"><a class="nav-link" href="/index">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/menu">Thực đơn</a></li>
+        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/order">Order</a></li>
+        <li class="nav-item">
+          <a class="nav-link active position-relative" href="/notifications">
+            <i class="fa fa-bell position-relative">
+              <span id="notif-badge"
+                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none">
+              </span>
+            </i>
+          </a>
+        </li>
+        {% if session.get('username') %}
+          <li class="nav-item"><a class="nav-link" href="/account">👋 Xin chào, {{ session.get('username') }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('log_out') }}">Đăng xuất</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Đăng nhập</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h3 class="mb-4"><i class="fa fa-bell"></i> Thông báo của bạn</h3>
+  <div class="list-group" id="notif-container">
+  </div>
+</div>
+<footer class="text-center">
+  <p>&copy; 2025 NAM Cohhee. Tất cả quyền được bảo lưu.</p>
+  <p> Contact: 0974644276 </p>
+  <div class="social-links mt-2">
+    <a href="https://www.facebook.com/share/1B1Y4CbxdF/" target="_blank" class="mx-2 text-dark">
+      <i class="fab fa-facebook fa-lg"></i>
+    </a>
+    <a href="https://www.instagram.com/nampham9665?igsh=ZGFtcmdncTE4cWh1" target="_blank" class="mx-2 text-dark">
+      <i class="fab fa-instagram fa-lg"></i>
+    </a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  async function loadAllNotifications() {
+    let res = await fetch("/notification");
+    let data = await res.json();
+    let badge = document.getElementById("notif-badge");
+    let container = document.getElementById("notif-container");
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+      container.innerHTML = '<div class="alert alert-info">Hiện tại bạn chưa có thông báo nào.</div>';
+      badge.classList.add("d-none");
+      return;
+    }
+
+    data.forEach(n => {
+  let readClass = n.is_read ? "bg-light text-muted" : "bg-warning-subtle border-start border-4 border-warning";
+  container.innerHTML += `
+    <div onclick="markAsRead(${n.id})" class="card mb-3 notif-item ${readClass}" style="cursor:pointer;">
+      <div class="card-body d-flex justify-content-between align-items-start">
+        <div>
+          <i class="fa fa-bell me-2 text-warning"></i>
+          <span class="fw-semibold">${n.message}</span>
+        </div>
+        <small class="text-muted">${n.time}</small>
+      </div>
+    </div>
+  `;
+});
+
+
+    let hasUnread = data.some(n => !n.is_read);
+    if (hasUnread) {
+      badge.classList.remove("d-none");
+    } else {
+      badge.classList.add("d-none");
+    }
+  }
+
+  async function markAsRead(id) {
+    await fetch(`/notifications/read/${id}`, { method: "POST" });
+    loadAllNotifications();
+  }
+  loadAllNotifications();
+  setInterval(loadAllNotifications, 10000);
+</script>
+</body>
+</html>
